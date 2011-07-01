@@ -1,0 +1,579 @@
+jsonp1263230481486({
+    "uploaded": "2008-10-15 15:15:22", 
+    "snapshot_set": {
+        "count": 22, 
+        "items": [
+            [
+                75687, 
+                {
+                    "description": "Man, is this guy up there!", 
+                    "created": "2009-06-06 00:40:05", 
+                    "views": 12, 
+                    "bounds": {
+                        "xmin": 91522.5, 
+                        "ymin": 6847.2600000000002, 
+                        "ymax": 6967.2600000000002, 
+                        "xmax": 91702.5
+                    }, 
+                    "owner": {
+                        "username": "add360", 
+                        "first_name": "Richard", 
+                        "last_name": "Drew", 
+                        "id": 14552
+                    }, 
+                    "comment_set": null, 
+                    "id": 75687, 
+                    "name": "Lone skiier..."
+                }
+            ], 
+            [
+                29993, 
+                {
+                    "description": "Shot at max zoom of Panasonic DMC-FZ50 digicam at 420mm equiv.  Some sensor noise is apparent but the lens is sharp!", 
+                    "created": "2008-10-15 19:58:38", 
+                    "views": 65, 
+                    "bounds": {
+                        "xmin": 115506.0, 
+                        "ymin": 10530.5, 
+                        "ymax": 10672.6, 
+                        "xmax": 115695.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": {
+                        "count": 1, 
+                        "items": [
+                            [
+                                1399, 
+                                {
+                                    "owner": {
+                                        "username": "odyssey", 
+                                        "first_name": "Jason", 
+                                        "last_name": "Buchheim", 
+                                        "id": 414
+                                    }, 
+                                    "message": "Compare this max zoom to the max zoom of this gigapan http://share.gigapan.org/viewGigapan.php?id=3645  and this snapshot in particular http://share.gigapan.org/viewConversation.php?id=29993\n\nNotice that they both have the same max zoom field of view.  The mirror lens was sharp but had such bad vingetting.  The Panasonic is sharp and no vingetting.  I will come back this winter and shoot it with the Nikon DSLR and the 500mm Sigma now that I have a robotic mount to move the big telephoto lens around.", 
+                                    "id": 1399, 
+                                    "created": "2008-10-15 20:02:59"
+                                }
+                            ]
+                        ], 
+                        "available": 1, 
+                        "page": 1, 
+                        "per_page": null
+                    }, 
+                    "id": 29993, 
+                    "name": "Max Zoom at Top of Highlands Deep Temerity Lift"
+                }
+            ], 
+            [
+                29990, 
+                {
+                    "description": "So they really were headed over to that dangerous terain!", 
+                    "created": "2008-10-15 19:20:56", 
+                    "views": 37, 
+                    "bounds": {
+                        "xmin": 131279.0, 
+                        "ymin": 8694.6599999999999, 
+                        "ymax": 9324.3400000000001, 
+                        "xmax": 132117.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29990, 
+                    "name": "Back country skier track"
+                }
+            ], 
+            [
+                29989, 
+                {
+                    "description": "Risky and a 'long!' exit!!!", 
+                    "created": "2008-10-15 19:20:16", 
+                    "views": 64, 
+                    "bounds": {
+                        "xmin": 126811.0, 
+                        "ymin": 9006.1200000000008, 
+                        "ymax": 9862.8799999999992, 
+                        "xmax": 127950.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29989, 
+                    "name": "This is one crazy back country skier."
+                }
+            ], 
+            [
+                29988, 
+                {
+                    "description": "Ed;)", 
+                    "created": "2008-10-15 19:18:55", 
+                    "views": 49, 
+                    "bounds": {
+                        "xmin": 132816.0, 
+                        "ymin": 17612.599999999999, 
+                        "ymax": 18638.0, 
+                        "xmax": 134180.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29988, 
+                    "name": "'The Ski's that never get treed'"
+                }
+            ], 
+            [
+                29986, 
+                {
+                    "description": "ski patrol lookout shack", 
+                    "created": "2008-10-15 19:17:23", 
+                    "views": 26, 
+                    "bounds": {
+                        "xmin": 102702.0, 
+                        "ymin": 9442.9500000000007, 
+                        "ymax": 9562.9500000000007, 
+                        "xmax": 102861.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29986, 
+                    "name": "The crows nest"
+                }
+            ], 
+            [
+                29984, 
+                {
+                    "description": "One of my favorits!", 
+                    "created": "2008-10-15 19:14:33", 
+                    "views": 39, 
+                    "bounds": {
+                        "xmin": 88364.0, 
+                        "ymin": 9075.6399999999994, 
+                        "ymax": 10271.700000000001, 
+                        "xmax": 89954.699999999997
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29984, 
+                    "name": "Child's Play"
+                }
+            ], 
+            [
+                29983, 
+                {
+                    "description": "Fun on a powder day!", 
+                    "created": "2008-10-15 19:13:37", 
+                    "views": 28, 
+                    "bounds": {
+                        "xmin": 102110.0, 
+                        "ymin": 12473.0, 
+                        "ymax": 13669.1, 
+                        "xmax": 103701.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29983, 
+                    "name": "Hyde Park"
+                }
+            ], 
+            [
+                29982, 
+                {
+                    "description": "Safer until you have to cross the water trestle, dont fall off!", 
+                    "created": "2008-10-15 19:12:35", 
+                    "views": 29, 
+                    "bounds": {
+                        "xmin": 152652.0, 
+                        "ymin": 13857.700000000001, 
+                        "ymax": 14114.1, 
+                        "xmax": 152993.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29982, 
+                    "name": "West Willow Low Exit"
+                }
+            ], 
+            [
+                29981, 
+                {
+                    "description": "Only safe when you dont have avalanche risk", 
+                    "created": "2008-10-15 19:12:04", 
+                    "views": 14, 
+                    "bounds": {
+                        "xmin": 152549.0, 
+                        "ymin": 13336.200000000001, 
+                        "ymax": 13592.6, 
+                        "xmax": 152890.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29981, 
+                    "name": "West Willow High Exit"
+                }
+            ], 
+            [
+                29980, 
+                {
+                    "description": "Have not seen any lines here, but it has been done!", 
+                    "created": "2008-10-15 19:11:27", 
+                    "views": 18, 
+                    "bounds": {
+                        "xmin": 147516.0, 
+                        "ymin": 12717.6, 
+                        "ymax": 14615.799999999999, 
+                        "xmax": 150040.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29980, 
+                    "name": "The 'Widow Maker'"
+                }
+            ], 
+            [
+                29979, 
+                {
+                    "description": "Dont want to get caught in one of those!", 
+                    "created": "2008-10-15 19:10:24", 
+                    "views": 15, 
+                    "bounds": {
+                        "xmin": 139499.0, 
+                        "ymin": 10750.799999999999, 
+                        "ymax": 11007.200000000001, 
+                        "xmax": 139840.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29979, 
+                    "name": "Alvalanche Debris"
+                }
+            ], 
+            [
+                29978, 
+                {
+                    "description": "Getting ready for 'She's Easy'", 
+                    "created": "2008-10-15 19:09:50", 
+                    "views": 26, 
+                    "bounds": {
+                        "xmin": 134190.0, 
+                        "ymin": 9041.3999999999996, 
+                        "ymax": 9161.3999999999996, 
+                        "xmax": 134350.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29978, 
+                    "name": "Backcountry skiers"
+                }
+            ], 
+            [
+                29977, 
+                {
+                    "description": "13,300 feet, great backcountry skiing.", 
+                    "created": "2008-10-15 19:09:19", 
+                    "views": 4, 
+                    "bounds": {
+                        "xmin": 135556.0, 
+                        "ymin": 8906.8999999999996, 
+                        "ymax": 9164.7000000000007, 
+                        "xmax": 135899.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29977, 
+                    "name": "Baldy Mountain Peak"
+                }
+            ], 
+            [
+                29975, 
+                {
+                    "description": "Where they originally thought of putting the first ski hill, would have been great.  The surveyor from Europe said, 'Yeah, that looks like the mountains where I am from'", 
+                    "created": "2008-10-15 19:07:34", 
+                    "views": 10, 
+                    "bounds": {
+                        "xmin": 9806.3899999999994, 
+                        "ymin": 1585.49, 
+                        "ymax": 11910.5, 
+                        "xmax": 23538.700000000001
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29975, 
+                    "name": "Mt Hayden"
+                }
+            ], 
+            [
+                29974, 
+                {
+                    "description": "Tallest, (Not highest) mountain in Colorado, elevation rise of over 7000 feet.", 
+                    "created": "2008-10-15 19:05:18", 
+                    "views": 6, 
+                    "bounds": {
+                        "xmin": 170047.0, 
+                        "ymin": 11853.6, 
+                        "ymax": 14436.4, 
+                        "xmax": 173482.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29974, 
+                    "name": "Mt Sopris"
+                }
+            ], 
+            [
+                29973, 
+                {
+                    "description": "Exceelent Double Black Diamond slopes", 
+                    "created": "2008-10-15 19:04:39", 
+                    "views": 12, 
+                    "bounds": {
+                        "xmin": 152526.0, 
+                        "ymin": 11844.9, 
+                        "ymax": 13743.1, 
+                        "xmax": 155051.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29973, 
+                    "name": "Hanging Vall Headwall, Snowmass"
+                }
+            ], 
+            [
+                29972, 
+                {
+                    "description": "Aspe Highlands", 
+                    "created": "2008-10-15 19:03:25", 
+                    "views": 23, 
+                    "bounds": {
+                        "xmin": 116996.0, 
+                        "ymin": 10308.6, 
+                        "ymax": 10783.4, 
+                        "xmax": 117627.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29972, 
+                    "name": "Top of Loge Peak Lift"
+                }
+            ], 
+            [
+                29971, 
+                {
+                    "description": "Aspen Goes 'Deep'", 
+                    "created": "2008-10-15 19:02:57", 
+                    "views": 12, 
+                    "bounds": {
+                        "xmin": 115500.0, 
+                        "ymin": 10460.9, 
+                        "ymax": 10717.4, 
+                        "xmax": 115841.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29971, 
+                    "name": "Top of 'Deep Temerity' lift"
+                }
+            ], 
+            [
+                29970, 
+                {
+                    "description": "Excellent on-piste 'off piste' skiing.  Fabolous!", 
+                    "created": "2008-10-15 19:02:20", 
+                    "views": 11, 
+                    "bounds": {
+                        "xmin": 92048.399999999994, 
+                        "ymin": 5736.9499999999998, 
+                        "ymax": 13325.4, 
+                        "xmax": 102141.0
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29970, 
+                    "name": "Aspen Highlands Bowl"
+                }
+            ], 
+            [
+                29969, 
+                {
+                    "description": "Back country hiker track visible.", 
+                    "created": "2008-10-15 19:01:40", 
+                    "views": 22, 
+                    "bounds": {
+                        "xmin": 86294.399999999994, 
+                        "ymin": 6394.8000000000002, 
+                        "ymax": 7148.3999999999996, 
+                        "xmax": 87296.600000000006
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29969, 
+                    "name": "The 'Thumb'"
+                }
+            ], 
+            [
+                29968, 
+                {
+                    "description": "The prayer flags and back country gate a the top of Aspen Highlands Bowl.", 
+                    "created": "2008-10-15 19:01:07", 
+                    "views": 21, 
+                    "bounds": {
+                        "xmin": 93386.800000000003, 
+                        "ymin": 6127.5699999999997, 
+                        "ymax": 6534.6300000000001, 
+                        "xmax": 93928.100000000006
+                    }, 
+                    "owner": {
+                        "username": "odyssey", 
+                        "first_name": "Jason", 
+                        "last_name": "Buchheim", 
+                        "id": 414
+                    }, 
+                    "comment_set": null, 
+                    "id": 29968, 
+                    "name": "Highlands Bowl Peak"
+                }
+            ]
+        ], 
+        "available": 22, 
+        "page": 1, 
+        "per_page": null
+    }, 
+    "updated": "2009-12-30 17:12:05", 
+    "projection": {
+        "field_of_view": {
+            "width": null, 
+            "base": null, 
+            "height": null
+        }, 
+        "type": "spherical", 
+        "distance": null
+    }, 
+    "description": "Spectacular Spring Skiing, view of Aspen Highlands from the Aspen Sundeck", 
+    "views": 4183, 
+    "orientation": null, 
+    "gigapixels": 3.3548399999999998, 
+    "location": null, 
+    "owner": {
+        "username": "odyssey", 
+        "first_name": "Jason", 
+        "last_name": "Buchheim", 
+        "id": 414
+    }, 
+    "height": 18638, 
+    "width": 180000, 
+    "levels": 11, 
+    "tag_set": [
+        "odysseyexpeditions", 
+        "mountains", 
+        "snow", 
+        "skiing", 
+        "colorado", 
+        "highlands", 
+        "aspen", 
+        "panasonic", 
+        "fz50", 
+        "beta"
+    ], 
+    "taken": "2008-10-15 00:00:00", 
+    "comment_set": null, 
+    "explore_score": 69, 
+    "id": 10823, 
+    "name": "Aspen Highlands from Aspen"
+});

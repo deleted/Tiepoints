@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <title>Tiepointer</title>
+
+      <!-- GE Plugin Javascript -->
+      <script src="http://www.google.com/jsapi?key=ABQIAAAAdMeUEfCL4AOunlqSYlNm4hTAxI7-za4_vpc8ylg61zzAPE8vFBRU4ZdYcTiyJCp6CnRkp2sQdbG6vw"
+	      type="text/javascript"></script>
+      <!-- <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.2/prototype.js"></script> -->
+      <!-- <script src="/scripts/xmlrpc.js" type="text/javascript"></script> -->
+      <!--    <script src="/scripts/tiepoints.js" type="text/javascript"></script> -->
+
+      <!-- Image Browser Javascript -->
+      <script type="text/javascript" src="http://seadragon.com/ajax/0.8/seadragon-min.js"></script>
+      <script src="scripts/deepzoom.js" type="text/javascript"></script>
+
+      <script>
+	google.load("earth", "1");
+	google.load("jquery", "1.3.2");
+    
+/* Parameters */
+  var DEFAULT_GE_VIEW = {
+    // San Francisco
+    'lat': 37.7548025158956,
+    'lon': -122.45542151199643,
+    'range': 18864.668423973435,
+  }
+  var ACTIVE_ICON = 'http://localhost/~ted/images/icn_tp_active.png';
+  var INACTIVE_ICON = 'http://localhost/~ted/images/icn_tp_inactive.png';
+  var iconStyles;
+  
+/* Utilities */
+/*  	
+    // Douglas Crockford
+  	function object(o) {
+            function F() {}
+            F.prototype = o;
+            return new F();
+    }
+
+    // Array Remove - By John Resig (MIT Licensed)
+    // http://ejohn.org/blog/javascript-array-remove/
+    Array.prototype.remove = function(from, to) {
+      var rest = this.slice((to || from) + 1 || this.length);
+      this.length = from < 0 ? this.length + from : from;
+      return this.push.apply(this, rest);
+    };
+*/
+  
+  /* GE Initialization */
+	var ge = null;	
+	function init() {
+	  google.earth.createInstance('map3d', initCallback, failureCallback);
+	  deepzoom_init();
+	}
+
+	function initCallback(object) {
+	    ge = object;
+	    
+	    var lookat = ge.createLookAt('');
+	    lookat.setLatitude(DEFAULT_GE_VIEW.lat);
+	    lookat.setLongitude(DEFAULT_GE_VIEW.lon);
+	    lookat.setRange(DEFAULT_GE_VIEW.range);
+	    ge.getView().setAbstractView(lookat);
+	    
+	    google.earth.addEventListener(ge.getGlobe(), 'mousemove', globeMouseMoveHandler);
+	    google.earth.addEventListener(ge.getGlobe(), 'click', globeClickHandler)
+	    google.earth.addEventListener(ge.getGlobe(), 'mousedown', gePointDragDownHandler);
+	    google.earth.addEventListener(ge.getGlobe(), 'mousemove', gePointDragMoveHandler);
+	    google.earth.addEventListener(ge.getWindow(), 'mouseup', gePointDragUpHandler);
+  	  ge.getWindow().setVisibility(true);
+  	  
+  	  
+  	  iconStyles = { // Has to be here because makeIconStyle requires ge
+        'active': makeIconStyle(ACTIVE_ICON),
+        'inactive': makeIconStyle(INACTIVE_ICON)
+      };
+      
+	}
+	
+	function failureCallback(object) {
+	  alert("Failed to load Google Earth.");
+	}
+	
+	/* Google Earth Utilities */
+	
+	function generatePlacemark(name,lat,lon){
+	  var pm = ge.createPlacemark('');
+	  //pm.setName(name);
+	  var point = ge.createPoint('');
+	  point.setLongitude(lon);
+	  point.setLatitude(lat);
+	  pm.setGeometry(point);
+	  pm.setStyleSelector(iconStyles['active']); //assuming new placemarks are always going to be active...
+	  ge.getFeatures().appendChild(pm);
+	  return pm;
+	}
+	
+/* Event Handlers */
+	function globeMouseMoveHandler(event) {
+	  var lat = event.getLatitude();
+	  var lon = event.getLongitude();
+	  var button = event.getButton();
+	  document.getElementById('globePosition').innerHTML = lat + ", " + lon + " : " + button;
+	}
+	
+	
+	function globeClickHandler(event) {
+	  if (event.getButton() == 0) { //Left Button
+	    if (event.getTarget().getType() == 'KmlPlacemark' && event.getTarget().getGeometry().getType() == 'KmlPoint') { // placemark click
+	      tiepoints.getTiepointForPlacemark(event.getTarget()).activate();
+	    } else { //non-placemark click deselects active tiepoint
+   	    var lat = event.getLatitude();
+    	  var lon = event.getLongitude();
+    	  var tp = tiepoints.active;
+    	  if(tp && tp.lat && tp.lon){
+    	    tp.deactivate();
+        } else if (tp) { // active tiepoint with no GE point yet
+          tp.update(lat, lon, null, null);
+        } else { // new tiepoint
+          tiepoints.addTiepoint(lat, lon, null, null);
+          //tiepoints.points[tiepoints.points.length - 1].updatePlacemark();
+        }
+    }
+    }
+	}
+	
+	var dragInfo = null; //Global to hold current drag status	
+	function gePointDragDownHandler(event) {
+	  //detect click events on points
+	  if (event.getTarget().getType() == 'KmlPlacemark' && event.getTarget().getGeometry().getType() == 'KmlPoint') {
+	    var placemark = event.getTarget();
+	    if(placemark == tiepoints.active.placemark){
+	      dragInfo = {
+	        placemark: placemark,
+	        dragged: false
+	      };
+	    }
+	  }
+	}
+	
+	function gePointDragMoveHandler(event) {
+	  //Handle actual dragging of points
+	  if (dragInfo) {
+      if (event.getButton() >= 0) {
+  	    event.preventDefault();
+  	    var point = dragInfo.placemark.getGeometry();
+  	    point.setLatitude(event.getLatitude());
+  	    point.setLongitude(event.getLongitude());
+  	    dragInfo.dragged = true;
+      } else {
+        gePointDragUpHandler(event);
+      }
+	  }
+	}
+	
+	function gePointDragUpHandler(event) {
+	  //release drag
+	  if (dragInfo) {
+	    if (dragInfo.dragged) {
+	      event.prefentDefault();
+	      var point = dragInfo.placemark.getGeometry();
+	      tiepoints.active.update(point.getLatitude(), point.getLongitude(), null, null);
+	    }
+	    dragInfo = null;
+	  }
+	}
+	
+	function seadragonImageClickHandler(event) {
+	  if (event.target.nodeName == 'IMG') {return true;}
+
+	    // getMousePosition() returns position relative to page, while we want the
+	    // position relative to the viewer element. so subtract the difference.
+	    var pixel = Seadragon.Utils.getMousePosition(event).minus(Seadragon.Utils.getElementPosition(viewer.elmt));
+   
+	    if (!viewer.isOpen()) { return; }
+   
+	    var point = mousePixelToImagePixel(pixel);
+	    var dims = viewer.source.dimensions;
+	    if (point.x >= 0.0 && point.y >= 0.0 && point.x < dims.x && point.y < dims.y) {
+        if(tiepoints.active) {
+          var tp = tiepoints.active;
+          tp.updateSeadragonMark(Seadragon.Utils.getMousePosition(event)) // absolute screen pixel coords
+          tp.update(null, null, point.x, point.y)
+        } else {
+          tp = tiepoints.addTiepoint(null, null, point.x, point.y);
+          tp.updateSeadragonMark(Seadragon.Utils.getMousePosition(event)) // absolute screen pixel coords
+      }
+     }
+	}
+	//Seadragon.Utils.addEvent(viewer.elmt, "mousedown", seadragonImageClickHandler);
+	
+	function sgMarkDragDownHandler(event) {
+	  //if (event.target == tiepoints.active.seadragonMark) {alert('Hooray!')}
+    if (tiepoints.active && event.target == tiepoints.active.seadragonMark) {
+      dragInfo = {
+  	    sgMark: event.target,
+  	    dragged: false,
+  	    originalPoint: Seadragon.Utils.getMousePosition(event)
+  	  }
+    }
+	  //event.stopPropogation();
+	}
+	
+	/* 
+	There are 2 sets of Drag event Handlers here:
+	The first is designed to work with JQuery events.
+	The second are designed to work with a seadragon MouseTracker.
+	Soon, one will stand and one will fail!
+	*/
+	function sgMarkDragMoveHandler(event) {
+	  if (dragInfo) {
+	    event.stopPropagation();
+	    var img = $(dragInfo.sgMark); //FIXME
+	    img.css({left: event.pageX, top: event.pageY});
+	    dragInfo.dragged = true;
+	  }
+	}
+	
+	var dragInfo;
+	function sgMarkDragUpHandler(event) {
+	  if (dragInfo && dragInfo.dragged) {
+	    var docPoint = Seadragon.Utils.getMousePosition(event) // relative to document as a seadragon Point
+	    var dims = viewer.source.dimensions;
+	    var tp = tiepoints.active;
+	    if (docPoint.x >= 0.0 && docPoint.y >= 0.0 && docPoint.x < dims.x && docPoint.y < dims.y) {
+  	    //var canvasPoint = Seadragon.Utils.getMousePosition(event).minus(Seadragon.Utils.getElementPosition(viewer.elmt));   
+  	    var imagePixel = mousePixelToImagePixel(docPoint.minus(Seadragon.Utils.getElementPosition(viewer.elmt)));
+  	    tp.update(null, null, imagePixel.x, imagePixel.y);
+  	    tp.updateSeadragonMark(docPoint);
+	    } else {
+	      tp.updateSeadragonMark(null, null, dragInfo.originalPoint.x, dragInfo.originalPoint.y);
+	    }
+	  }
+	  dragInfo = null;
+	}
+	
+	function sgPressHandler(tracker, position) {
+	  viewer.setMouseNavEnabled(false); //prevent base image from scrolling
+	  if (tiepoints.active && tiepoints.active.seadragonMark == tracker.target) {
+	    alert("You pressed the active tiepoint.")
+      dragInfo = {
+  	    sgMark: tiepoints.active,
+  	    dragged: false,
+  	    startLoc: Seadragon.Utils.getMousePosition(event)
+  	  }
+    }
+	}
+	
+	function sgDragHandler(tracker, position, delta, shift) {
+	  if (dragInfo) {
+	    var newLoc = dragInfo.startLoc.plus(delta);
+	    var img = dragInfo.seadragonMark;
+      //img.style.left = newLoc.x + 'px';
+      //img.style.top = newLoc.y + 'px';
+      viewer.drawer.updateOverlay(img, newLoc);
+	    dragInfo.dragged = true;
+	  }
+	}
+	
+	function sgReleaseHandler(tracker, position, insideElmtPress, insideElmtRelease) {
+	  viewer.setMouseNavEnabled(true); // resume baseimage scrollability
+	};
+		
+	/* DOM Manipulation */
+  	function tableRow(size) {
+  	  tr = $('<tr>');
+  	  for (var i=0; i<size; i=i+1) {
+  	    tr.append($('<td>'));
+  	  }
+  	  return tr;
+  	}
+  	
+  	
+  	function makeIconStyle(imageurl) {
+  	    var icon = ge.createIcon('');
+        icon.setHref(imageurl);
+        var style = ge.createStyle(''); //create a new style
+        style.getIconStyle().setIcon(icon); //apply the icon to the style
+        return style;
+  	};
+
+    /* Tiepoint data structures */
+    function Tiepoint (lat,lon,x,y) { // constructor
+      this.is_new = true; //to be unset the first time the tiepoint is deactivated
+      if (!tiepoints.active) {tiepoints.active = this}; //Prevent new tiepoints from being added by Seadragon click events while this one is initializing
+      this.id = tiepoints.nextId();
+      this.lat = lat;
+      this.lon = lon;
+      this.x = Math.floor(x);
+      this.y = Math.floor(y);
+      
+      this.active = function(){return tiepoints.active == this};
+
+      this.updatePlacemark = function(){
+        if (this.lat && this.lon) {
+          if(!this.placemark){
+            this.placemark = generatePlacemark(this.id, this.lat, this.lon);
+            this.placemark.setStyleSelector(iconStyles[tiepoints.active == this ? 'active' : 'inactive']);
+          } else {
+            point = this.placemark.getGeometry();
+            if(point.getLatitude() != this.lat || point.getLongitude != this.lon) { //Point has changed. Update it.
+              point.setLatitude(this.lat);
+              point.setLongitude(this.lon);
+          }
+        }
+          //this.placemark.setStyleSelector(iconStyles[tiepoints.active == this ? 'active' : 'inactive' ]);
+        }
+      }
+      if (this.lat && this.lon){this.updatePlacemark();};
+      
+      this.updateSeadragonMark = function (pixelpoint){
+        point = viewer.viewport.pointFromPixel(pixelpoint.minus(Seadragon.Utils.getElementPosition(viewer.elmt)));
+        if (!this.seadragonMark){
+          //create it
+          this.seadragonMark = $('<img>');
+          this.seadragonMark[0].src = tiepoints.active == this ? ACTIVE_ICON : INACTIVE_ICON;
+          /*
+          this.seadragonMark.bind('mousedown', sgMarkDragDownHandler);
+          this.seadragonMark.bind('mousemove', sgMarkDragMoveHandler);
+          this.seadragonMark.bind('mouseup', sgMarkDragUpHandler);
+          */
+          this.seadragonMark = this.seadragonMark[0];
+          viewer.drawer.addOverlay(this.seadragonMark, point);
+          
+          this.sgTracker = new Seadragon.MouseTracker(this.seadragonMark);
+          this.sgTracker.pressHandler = sgPressHandler;
+          this.sgTracker.dragHandler = sgDragHandler;
+          this.sgTracker.releaseHandler = sgReleaseHandler;
+          this.sgTracker.setTracking(true);
+          
+        } else {
+          this.seadragonMark.src = tiepoints.active == this ? ACTIVE_ICON : INACTIVE_ICON;
+          viewer.drawer.updateOverlay(this.seadragonMark, point);
+        }
+      }
+      
+      this.activate = function(){};
+      this.updateTblNode = function () {
+        SIGDIGS = 4;
+        if (!this.node){
+          //create display node (i.e. table row)
+          this.node = tableRow(4);
+          $('#tbl_tiepoints tbody').prepend(this.node);
+        } 
+        tds = this.node.children();
+        tds[0].innerHTML = this.lat ? this.lat.toFixed(SIGDIGS) : '?';
+        tds[1].innerHTML = this.lon ? this.lon.toFixed(SIGDIGS) : '?';
+        tds[2].innerHTML = this.x ? this.x : '?';
+        tds[3].innerHTML = this.y ? this.y : '?';
+        /*
+        if (tiepoints.active()) {
+          this.node.addClass('active'); 
+        } else if (this.node.hasClass('active')) { 
+          this.node.removeClass('active'); 
+        }
+        */
+      }
+      this.updateTblNode();
+      
+      this.update = function(lat, lon, x, y) {
+        //if any of the parameters are null, they won't be set
+        if (lat) {this.lat = lat};
+        if (lon) {this.lon = lon};
+        if (x) {this.x = Math.floor(x)};
+        if (y) {this.y = Math.floor(y)};
+        if (this.lat && this.lon && this.x && this.y && this.is_new) {this.deactivate()};
+        if (this.lat && this.lon) {this.updatePlacemark()};
+        //refreshTpTable();
+        this.updateTblNode();
+      }
+      
+      //Activation: This is a UI thing.  If the tiepoint is active, it will be editiable.
+       this.activate = function(){
+         //tiepoints.deactivateAll();
+         //this.active=true;
+         if(tiepoints.active && tiepoints.active != this) {tiepoints.active.deactivate()};
+         tiepoints.active = this;
+         this.node.addClass('active');//this.updateTblNode();
+         //this.updatePlacemark();
+         if (this.placemark) {this.placemark.setStyleSelector(iconStyles['active'])};
+         if (this.seadragonMark) {this.seadragonMark.src = ACTIVE_ICON};  
+       }
+       this.deactivate = function(){
+         if (this.is_new) { this.is_new = false}; //Tiepoints lose newness the first time they are deactivated.
+         this.node.removeClass('active');//this.updateTblNode();
+         //this.updatePlacemark();
+         if (this.placemark) {this.placemark.setStyleSelector(iconStyles['inactive'])};
+         if (this.seadragonMark) {this.seadragonMark.src = INACTIVE_ICON};
+         tiepoints.active = null;
+       }
+       this.activate(); //Activate tiepoint at create time.
+       this.node.bind('click', {id: this.id}, function(e){tiepoints.activate(e.data.id)})
+       
+       //Nonfunctional...FIXME
+       this.destroy = function () {
+         ge.getFeatures().removeChild(this.placemark);
+         delete this.placemark();
+         delete this.seadragomMark;
+         delete tiepoints.points[jQuery.inArray(this, tiepoints.points)];
+         delete this;
+       }
+    }
+    
+  	var tiepoints = { // manages the collection
+  	  points: [],
+  	  active: null, // points to active tiepoint
+  	  current_id: 0,
+  	  nextId: function(){this.current_id += 1; return this.current_id;},
+  	  addTiepoint: function(lat, lon, x, y){
+  	    var tp = new Tiepoint(lat, lon, x, y);
+    	  tiepoints.points.push(tp);
+    	  return tp;
+  	  },
+  	  deactivateAll: function(){
+  	    for(i in this.points){
+  	      this.points[i].deactivate();
+  	    }
+  	    this.gotActive = false; 
+  	  },
+  	  activate: function(id){
+  	    for (i in this.points){
+  	      if (this.points[i].id == id){this.points[i].activate()}
+  	    }
+  	  },
+  	  /*
+  	  getActive: function(){
+  	    //Return the active tiepoint, or nothing.
+  	    if(!this.gotActive) {return null};
+  	    for (i in this.points) {
+  	      if (this.points[i].active) {return this.points[i]}
+  	    }
+  	    return null
+  	  },
+  	  */
+  	  getTiepointForPlacemark: function(placemark) {
+  	    for (i in this.points) {
+  	      if (this.points[i].placemark == placemark) {return this.points[i]}
+  	    }
+  	  }
+
+  	};
+  
+    </script>
+
+      
+      <style type="text/css">
+        #container
+        {
+        width: 100%;
+        height: 500px;
+        background-color: black;
+        border: 1px solid black;
+        color: white;   /* for error messages, etc. */
+        }
+        div.statusbar
+        {
+        width: 100%;
+        height: 16px;
+        background-color: red;
+        border: 1px solid black;
+        color: white; 
+	      font-family:courier;
+	      font-size:8pt;
+        }
+        .stack_horizontal{
+          float: left;
+          width: 500px;
+          height: 500px;
+          margin-left: 8px;
+        }
+        div#viewers{
+          float: left;
+        }
+        div#map3d{
+          border: 1px solid silver; 
+          height: 500px; 
+          width: 500px;
+        }
+        div#tiepoints{
+          /*padding-top: 20px;*/
+          float:left;
+          margin-left: 15px;
+        }
+        table#tbl_tiepoints{
+          font-size: -4;
+        }
+        table#tbl_tiepoints tr.active{
+          font-weight: bold;
+        }
+        .highlight {
+          background-color: yellow;
+        }
+      </style>
+    </head>
+
+  <body onload='init()' id='body'>
+      <center>
+	    <div>
+             Go ahead and pick some tie points!
+    	</div>
+    	</center>
+      
+
+    <div id="viewers">
+      <div class="stack_horizontal">
+        <div id='map3d'></div>
+        <div id="globePosition" class="statusbar"></div>
+      </div>
+      <div class="stack_horizontal">
+        <div id="container"></div>
+        <div id="imagePixels" class="statusbar"></div>
+      </div>
+    </div>
+    
+    <div id="tiepoints">
+      <button onclick="tiepoints.addTiepoint(null, null, null, null)">New</button>
+      <button onclick="tiepoints.active.deactivate()">None</button>
+      <table id="tbl_tiepoints">
+        <thead>
+          <tr>
+            <th colspan="2">Planetspace</th>
+            <th colspan="2">Imagespace</th>
+          </tr>
+          <tr>
+            <th>Lat</th>
+            <th>Lon</th>
+            <th>X</th>
+            <th>Y</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    
+
+    
+    </body>
+</html>

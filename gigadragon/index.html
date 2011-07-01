@@ -1,0 +1,512 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--suppress CheckTagEmptyBody -->
+<html>
+<head>
+   <title>Seadragon + Gigapan</title>
+   <style type="text/css">
+      body {
+         font-family: Verdana, sans-serif;
+         font-size: 8pt;
+      }
+
+      #gigapan_chooser {
+         float: right;
+      }
+
+      .label {
+         font-weight: bold;
+      }
+
+      .page_break {
+         clear: right;
+      }
+
+      .overlay {
+      border: 1px solid white;
+      }
+
+      #gigapan_panel {
+         width: 100%;
+         height: 400px;
+         background-color: black;
+      }
+   </style>
+   <script language="JavaScript" type="text/javascript" src="js/jquery.js"></script>
+   <script language="JavaScript" type="text/javascript" src="js/seadragon-min.js"></script>
+   <script language="JavaScript" type="text/javascript" src="js/GigapanTileSource.js"></script>
+   <script language="JavaScript" type="text/javascript" src="js/SeadragonUtils.js"></script>
+   <script language="JavaScript" type='text/javascript' src='js/zapatec.js'></script>
+   <script language="JavaScript" type='text/javascript' src='js/paneset.js'></script>
+   <script type='text/javascript'>
+     //var viewport_size = Seadragon.Utils.getWindowSize();
+     //var paneSet = Zapatec.PaneSet.setup({
+     //  parent : "parent",
+     //  orientation : "vertical",
+     //  length: viewport_size.y-95,
+     //  breadth: viewport_size.x-25,
+     //  resizable : true,
+     //  panes : "container",
+     //  reuseContainer : "container",
+     //  dataType : "html"
+     //});
+   </script>
+   <script type='text/javascript'>
+   window.onresize= handleresize;
+  
+   function handleresize() {
+     var viewport_size = Seadragon.Utils.getWindowSize();
+     var paneSet = Zapatec.PaneSet.setup({
+       parent : "parent",
+       orientation : "vertical",
+       length: viewport_size.y-95,
+       breadth: viewport_size.x-25,
+       resizable : true,
+       panes : "container",
+       reuseContainer : "container",
+       dataType : "html"
+     });
+   }
+
+   </script>
+   <script language="JavaScript" type="text/javascript">
+      var SeadragonUtils = org.gigapan.seadragon.SeadragonUtils;
+      var defaultGigapanId = 10823;
+      var previousGigapanId = 0;
+      var nextdirection='initialize';
+      var gigapan;
+      var search_id = Seadragon.Utils.getUrlParameter('id');
+      if (search_id != null){defaultGigapanId=search_id;}
+      var viewer = null;
+      
+      var snapshot_overlay_rect = document.createElement("div");
+      snapshot_overlay_rect.id = "snapshot_overlay_rect";
+      snapshot_overlay_rect.className = "overlay";
+      snapshot_overlay_rect.visibility = false;
+
+      $.ajaxSetup({
+         type: 'GET',
+         dataType: 'jsonp',
+         timeout: 3000,
+         cache: false,
+         global: false
+      });
+
+      $(document).ready(function()
+         {
+         // initialize the viewer
+         viewer = new Seadragon.Viewer("gigapan_panel");
+         Seadragon.Config.imageLoaderLimit = 6; // max number of concurrent image downloads
+
+         loadGigapan(defaultGigapanId);
+         
+         setTimeout("handleresize();",1000);
+         });
+
+      function switchGigapan(gigapanId)
+         {
+         if (!gigapanId || isNaN(gigapanId) || gigapanId < 0)
+            {
+            alert("Please enter a valid gigapan ID");
+            }
+         else
+            {
+            loadGigapan(gigapanId);
+            }
+         }
+      function backGigapan(gigapanId)
+         {
+         if (!gigapanId || isNaN(gigapanId) || gigapanId < 0)
+            {
+            alert("Please enter a valid gigapan ID");
+            }
+         else
+            {
+            nextdirection='back';
+            gigapanId--;
+            
+            element = Seadragon.Utils.getElement('gigapanId');
+            element.value = gigapanId;
+            
+            loadGigapan(gigapanId);
+            setTimeout("checkSuccess();",500);
+            }
+         }
+      function forwardGigapan(gigapanId)
+         {
+         if (!gigapanId || isNaN(gigapanId) || gigapanId < 0)
+            {
+            alert("Please enter a valid gigapan ID");
+            }
+         else
+            {
+            nextdirection='forward';
+            gigapanId++;
+            
+            element = Seadragon.Utils.getElement('gigapanId');
+            element.value = gigapanId;
+            
+            loadGigapan(gigapanId);
+            setTimeout("checkSuccess();",500);
+            }
+         }
+      function checkSuccess()
+         {
+         gigapanId = document.getElementById('gigapanId').value;
+         if (nextdirection=='forward')
+            {
+            forwardGigapan(gigapanId);       
+            } 
+         else if (nextdirection=='back')
+            {
+            backGigapan(gigapanId);
+            }             
+         }
+
+function zoomToSnapshot(itemIndex)
+   {
+   var snapshot = gigapan['snapshot_set']['items'][itemIndex][1];
+   if (snapshot)
+      {
+      // get the bounds in gigapan coords and in seadragon coords
+      var gigapanBounds = snapshot['bounds'];
+      var seadragonRect = SeadragonUtils.convertGigapanRectToSeadragonRect(
+            gigapanBounds['xmin'], gigapanBounds['ymin'],
+            gigapanBounds['xmax'], gigapanBounds['ymax'],
+            gigapan['width']);
+
+      viewer.viewport.fitBounds(seadragonRect);
+      }
+   }
+
+function showSnapshotRectangle(itemIndex)
+   {
+   var snapshot = gigapan['snapshot_set']['items'][itemIndex][1];
+   if (snapshot)
+      {
+      // get the bounds in gigapan coords and in seadragon coords
+      var gigapanBounds = snapshot['bounds'];
+      var seadragonRect = SeadragonUtils.convertGigapanRectToSeadragonRect(
+            gigapanBounds['xmin'], gigapanBounds['ymin'],
+            gigapanBounds['xmax'], gigapanBounds['ymax'],
+            gigapan['width']);
+
+      // update the snapshot details
+      $("#snapshot_name").text(snapshot['name']);
+      $("#snapshot_description").text(snapshot['description']);
+      $("#snapshot_creator").text(createAuthorText(snapshot['owner']));
+      $("#snapshot_date_taken").text(snapshot['created']);
+      $("#snapshot_bounds_gigapan").text("[(" + gigapanBounds['xmin'] + ", " + gigapanBounds['ymin'] + "), (" + gigapanBounds['xmax'] + ", " + gigapanBounds['ymax'] + ")]");
+      $("#snapshot_bounds_seadragon").text("[(" + seadragonRect.getTopLeft().x + ", " + seadragonRect.getTopLeft().y + "), (" + seadragonRect.getBottomRight().x + ", " + seadragonRect.getBottomRight().y + ")]");
+
+      // make the overlay rectangle div visible
+      snapshot_overlay_rect.visibility = true;
+
+      // set the div to the bounds specified by the seadragon rect
+      viewer.drawer.addOverlay(snapshot_overlay_rect, seadragonRect);
+      }
+   }
+
+function hideSnapshotRectangle()
+   {
+   // clear the snapshot details
+   $("#snapshot_name").empty();
+   $("#snapshot_description").empty();
+   $("#snapshot_creator").empty();
+   $("#snapshot_date_taken").empty();
+   $("#snapshot_bounds_gigapan").empty();
+   $("#snapshot_bounds_seadragon").empty();
+
+   // remove the overlay rectangle from the view and make it invisible
+   viewer.drawer.removeOverlay(snapshot_overlay_rect);
+   snapshot_overlay_rect.visibility = false;
+   }
+
+
+	function createAuthorText(author)
+   		{
+   		var text = '';
+
+   		if (author)
+      		{
+      		text = author['username'];
+
+      		if (author['first_name'] || author['last_name'])
+         		{
+         		text = author['first_name'] + " " + author['last_name'] + " (" + text + ")";
+         		}
+      		}
+
+   		return text;
+   		}
+
+
+
+      function loadGigapan(gigapanId)
+         {
+         // clear the snapshot browser and the various gigapan details
+         $("#gigapan_name").text("Don't Give Up!!! Keep Hitting Forward or Back or Input Another ID");
+         $("#gigapan_date_taken").empty();
+         $("#gigapan_date_added").empty();
+         $("#gigapan_views").empty();
+         $("#snapshot_browser").empty();
+         $("#gigapan_description").empty();
+         $("#gigapan_explore_score").empty();
+         $("#gigapan_owner_firstname").empty();
+         $("#gigapan_owner_lastname").empty();
+         $("#gigapan_owner_username").empty();
+         $("#gigapan_height").empty();
+         $("#gigapan_width").empty();
+         $("#gigapan_gigapixels").empty();
+         element = Seadragon.Utils.getElement('gigapan_gigapixel_bar');
+         element.width = 0;
+         element = Seadragon.Utils.getElement('gigapan_explore_score_bar');
+         element.width = 0;
+         element = Seadragon.Utils.getElement('gigapan_explore_score_bar');
+         element.width = 0;
+         element = Seadragon.Utils.getElement('gigapan_views_bar');
+         element.width = 0;
+         document.title = 'GigaDragon - Roar!';
+         // clear the viewer
+         viewer.close();
+
+         // load the gigapan
+         
+
+         $.ajax(
+         {
+            url: 'http://api.gigapan.org/beta/gigapans/' + gigapanId + '.json',
+            
+            success: function(gigapanJSON)
+               {
+               //alert("gigapanId:" + gigapanId + " gigapan['id']:" + gigapan['id']+ "previousGigapanId" + previousGigapanId);
+               if (gigapanJSON && gigapanJSON['id'] )
+                  {
+                  gigapan=gigapanJSON;
+                  previousGigapanId=gigapan['id'];
+                  nextdirection='static';
+                  // create the tile source
+                  var gigapanSource = new GigapanTileSource(gigapan['id'], gigapan['width'], gigapan['height']);
+
+                  // tell the viewer to open the tile source
+                  viewer.openTileSource(gigapanSource);
+                  var viewport_size = Seadragon.Utils.getWindowSize();
+                  $("#gigapan_name").text(gigapan['name']);
+                  $("#gigapan_date_taken").text(gigapan['taken']);
+                  $("#gigapan_date_added").text(gigapan['uploaded']);
+                  $("#gigapan_views").text(gigapan['views']);
+                  $("#gigapan_description").text(gigapan['description']);
+                  $("#gigapan_explore_score").text(gigapan['explore_score']);
+                  $("#gigapan_owner_firstname").text(gigapan['owner']['first_name']);
+                  $("#gigapan_owner_lastname").text(gigapan['owner']['last_name']);
+                  $("#gigapan_owner_username").text(gigapan['owner']['username']);
+                  $("#gigapan_height").text(gigapan['height']);
+                  $("#gigapan_width").text(gigapan['width']);
+                  $("#gigapan_gigapixels").text(gigapan['gigapixels']);
+                  element = Seadragon.Utils.getElement('gigapanId');
+                  element.value = gigapan['id'];
+                  element = Seadragon.Utils.getElement('gigapan_gigapixel_bar');
+                  var barsize = (gigapan['gigapixels']*100);                  
+                  if (barsize>viewport_size.x-150){barsize=viewport_size.x-150}
+                  element.width = barsize;
+                  element = Seadragon.Utils.getElement('gigapan_explore_score_bar');
+                  var barsize = (gigapan['explore_score']);                  
+                  if (barsize>viewport_size.x-100){barsize=viewport_size.x-100}
+                  element.width = barsize;
+                  
+                  element = Seadragon.Utils.getElement('gigapan_views_bar');
+                  var barsize = (gigapan['views']/10);                  
+                  if (barsize>viewport_size.x-150){barsize=viewport_size.x-150}
+                  element.width = barsize;
+                  document.title = gigapan['name'];
+                  handleresize;
+                  // load the snapshots (if any)
+             if (gigapan['snapshot_set'] && gigapan['snapshot_set']['count'] && gigapan['snapshot_set']['items'])
+               {
+               for (var i = 0; i < gigapan['snapshot_set']['count']; i++)
+                  {
+                  var snapshotIdAndObject = gigapan['snapshot_set']['items'][i];
+                  if (snapshotIdAndObject)
+                     {
+                     var snapshotId = snapshotIdAndObject[0];
+                     var snapshot = snapshotIdAndObject[1];
+                     if (snapshot && snapshotId)
+                        {
+                        $("#snapshot_browser").append('<img border="0" alt="" onclick="zoomToSnapshot(' + i + ')" onmouseover="showSnapshotRectangle(' + i + ')" onmouseout="hideSnapshotRectangle();" src="http://api.gigapan.org/beta/gigapans/' + gigapanJSON['id'] + '/snapshots/' + snapshotId + '-80x60.jpg"/>');
+                        }
+                     }
+                  }
+               }
+            }
+
+               else
+                  {
+                    alert("Failed to load gigapan " + gigapanId);          
+                  }
+               }
+         });
+         }
+   </script>
+</head>
+<body>
+<div id="gigapan_chooser">
+  <span>
+   Panoramas by Jason Buchheim
+<a href='http://www.odyex.com/gigadragon/#id=15884' onclick="return switchGigapan(15884)" onclick="return switchGigapan()">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=15078' onclick="return switchGigapan(15078)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=11234' onclick="return switchGigapan(11234)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=11199' onclick="return switchGigapan(11199)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=10823' onclick="return switchGigapan(10823)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=10744' onclick="return switchGigapan(10744)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=10468' onclick="return switchGigapan(10468)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=10392' onclick="return switchGigapan(10392)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=10066' onclick="return switchGigapan(10066)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=10005' onclick="return switchGigapan(10005)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=9651' onclick="return switchGigapan(9651)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=8967' onclick="return switchGigapan(8967)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=8966' onclick="return switchGigapan(8966)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=8355' onclick="return switchGigapan(8355)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=8352' onclick="return switchGigapan(8352)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=8120' onclick="return switchGigapan(8120)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=8113' onclick="return switchGigapan(8113)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=5888' onclick="return switchGigapan(5888)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=5439' onclick="return switchGigapan(5439)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=5432' onclick="return switchGigapan(5432)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=5425' onclick="return switchGigapan(5425)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=5392' onclick="return switchGigapan(5392)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=5124' onclick="return switchGigapan(5124)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=5119' onclick="return switchGigapan(5119)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=4710' onclick="return switchGigapan(4710)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=4641' onclick="return switchGigapan(4641)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=4640' onclick="return switchGigapan(4640)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=4455' onclick="return switchGigapan(4455)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=4026' onclick="return switchGigapan(4026)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3845' onclick="return switchGigapan(3845)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3781' onclick="return switchGigapan(3781)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3645' onclick="return switchGigapan(3645)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3624' onclick="return switchGigapan(3624)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3623' onclick="return switchGigapan(3623)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3610' onclick="return switchGigapan(3610)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3577' onclick="return switchGigapan(3577)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3276' onclick="return switchGigapan(3276)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3268' onclick="return switchGigapan(3268)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=3124' onclick="return switchGigapan(3124)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2898' onclick="return switchGigapan(2898)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2743' onclick="return switchGigapan(2743)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2729' onclick="return switchGigapan(2729)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2718' onclick="return switchGigapan(2718)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2632' onclick="return switchGigapan(2632)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2604' onclick="return switchGigapan(2604)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2579' onclick="return switchGigapan(2579)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2576' onclick="return switchGigapan(2576)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2562' onclick="return switchGigapan(2562)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2543' onclick="return switchGigapan(2543)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2303' onclick="return switchGigapan(2303)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2300' onclick="return switchGigapan(2300)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2298' onclick="return switchGigapan(2298)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=2296' onclick="return switchGigapan(2296)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1566' onclick="return switchGigapan(1566)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1555' onclick="return switchGigapan(1555)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1552' onclick="return switchGigapan(1552)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1252' onclick="return switchGigapan(1252)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1186' onclick="return switchGigapan(1186)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1165' onclick="return switchGigapan(1165)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1151' onclick="return switchGigapan(1151)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=1149' onclick="return switchGigapan(1149)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=920' onclick="return switchGigapan(920)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=497' onclick="return switchGigapan(497)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=468' onclick="return switchGigapan(468)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=465' onclick="return switchGigapan(465)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=461' onclick="return switchGigapan(461)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=460' onclick="return switchGigapan(460)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=451' onclick="return switchGigapan(451)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=447' onclick="return switchGigapan(447)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=446' onclick="return switchGigapan(446)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=441' onclick="return switchGigapan(441)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=440' onclick="return switchGigapan(440)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=438' onclick="return switchGigapan(438)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=437' onclick="return switchGigapan(437)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=435' onclick="return switchGigapan(435)">*</a>
+<a href='http://www.odyex.com/gigadragon/#id=430' onclick="return switchGigapan(430)">*</a>
+   <form action="javascript:switchGigapan(document.getElementById('gigapanId').value);">
+      Gigapan ID:
+      <input type="text" id="gigapanId" size="5"/>
+      <input type="submit" value="Go"/>
+   </form></span><span>
+   <form action="javascript:backGigapan(document.getElementById('gigapanId').value);">      
+      <input type="submit" value="Previous"/>
+   </form></span><span>
+   <form action="javascript:forwardGigapan(document.getElementById('gigapanId').value);">      
+      <input type="submit" value="Next"/>
+   </form></span>
+   
+</div>
+<div class="page_break"></div>
+
+<hr>
+<div id="parent" style="float : left; width : 100%; height : 100%;">
+ <div id="container" class="zpPaneSetMarker" style="float : left; width : 100%; height : 100%;">
+  <div class="zpPaneMarker" style="float : left; width : 100%; height : 400px;" id="gigapan_panel">
+  </div>
+  <div class="zpPaneMarker" style="float : left; width : 100%; height : 100%;" id="gigapan_details">
+   
+    <div>
+     <span class="label">Name:</span> <B><span id="gigapan_name"></span></b>
+    </div>
+    <div>
+     <span class="label">Description:</span> <span id="gigapan_description"></span>
+    </div>
+    <div>
+     <span class="label">By:</span> <span id="gigapan_owner_firstname"></span> <span id="gigapan_owner_lastname"></span> <span id="gigapan_owner_username"></span>
+    </div>
+    <div>
+     <span class="label">Date Taken:</span> <span id="gigapan_date_taken"></span>
+    </div>
+    <div>
+     <span class="label">Date Added:</span> <span id="gigapan_date_added"></span>
+    </div>
+    <div>
+     <span class="label">Height:</span> <span id="gigapan_height"></span> <span class="label">Width:</span> <span id="gigapan_width"></span> 
+    </div>
+    <div>
+     <img id='gigapan_explore_score_bar' src='http://sage.math.washington.edu/home/kohel/shr/src/Crypt/Javascript/blue-bar.gif' width=1 height=15> <span class="label">Explore Score:</span> <span id="gigapan_explore_score"></span> 
+    </div>
+    <div>
+     <img id='gigapan_views_bar' src='http://sage.math.washington.edu/home/kohel/shr/src/Crypt/Javascript/red-bar.gif' width=1 height=15> <span class="label">Views:</span> <span id="gigapan_views"></span> 
+    </div>
+    <div>
+     <img id='gigapan_gigapixel_bar' src='http://sage.math.washington.edu/home/kohel/shr/src/Crypt/Javascript/blue-bar.gif' width=1 height=15> <span class="label">Gigapixels:</span> <span id="gigapan_gigapixels"></span>  
+    </div>   
+   <hr>
+   <div id="snapshot_browser"></div>
+   <hr>
+   <div id="snapshot_details">
+   <div class="title">Snapshot</div>
+   <div>
+      <span class="label">Name:</span> <span id="snapshot_name"></span>
+   </div>
+   <div>
+      <span class="label">Description:</span> <span id="snapshot_description"></span>
+
+   </div>
+   <div>
+      <span class="label">Snapped By:</span> <span id="snapshot_creator"></span>
+   </div>
+   <div>
+      <span class="label">Date Taken:</span> <span id="snapshot_date_taken"></span>
+   </div>
+
+   <div>
+      <span class="label">Bounds (Gigapan Coords):</span> <span id="snapshot_bounds_gigapan"></span>
+   </div>
+   <div>
+      <span class="label">Bounds (Seadragon Coords):</span> <span id="snapshot_bounds_seadragon"></span>
+   </div>
+   </div>
+
+   
+  </div>
+ </div>
+</div>				
+</div>
+</div>
+</html>
